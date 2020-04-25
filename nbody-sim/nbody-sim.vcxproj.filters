@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="game.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="game.h" />
+    <ClInclude Include="components\physics2d.h" />
+    <ClInclude Include="systems\point_render_system.h" />
+    <ClInclude Include="systems\gravity_system.h" />
+    <ClInclude Include="systems\spawn_system.h" />
+    <ClInclude Include="components\camera_focus.h" />
+    <ClInclude Include="systems\ui_info_system.h" />
+    <ClInclude Include="components\camera.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+</Project>
