@@ -1,6 +1,7 @@
 #pragma once
 #include <sgw/sgw.h>
 #include <sgw/game.h>
+#include <glm/gtx/rotate_vector.hpp>
 #include "../components/physics2d.h"
 #include "../components/camera_focus.h"
 #include "../components/camera.h"
@@ -94,22 +95,19 @@ namespace sim_game::systems {
 
 			auto random_mass = sgw::random::next(1.F, default_heavy_mass * 0.001F);
 
-			auto random_bool_1 = static_cast<bool>(sgw::random::next(0, 1));
-			auto velo = m_velocity;
-			auto spawn_point = glm::vec2((30.F + m_midpoint.x) + (10.F * offset_location_from_midpoint), m_midpoint.y);
+			auto random_rotation = sgw::random::next(0.F, 360.F);
 
-			if (random_bool_1) {
-
-				velo *= -1.F;
-				spawn_point = glm::vec2((m_midpoint.x - 30.F) - (10.F * offset_location_from_midpoint), m_midpoint.y);
-			}
+			glm::vec2 initial_velocity{ 0.F, m_velocity };
+			glm::vec2 spawn_rotation = glm::rotate(glm::vec2(1.F, 0.F), glm::radians(random_rotation));
+			auto rotated_spawn_point = m_midpoint + (spawn_rotation * (30.F + (10.F * offset_location_from_midpoint)));
+			auto rotated_initial_velocity = glm::rotate(initial_velocity, glm::radians(random_rotation));
 
 			if (!registry.valid(entity)) {
 				entity = registry.create();
 			}
 
-			registry.assign_or_replace<tranform2d>(entity, spawn_point.x, spawn_point.y);
-			registry.assign_or_replace<physics2d>(entity, 0.F, velo, random_mass);
+			registry.assign_or_replace<tranform2d>(entity, rotated_spawn_point.x, rotated_spawn_point.y);
+			registry.assign_or_replace<physics2d>(entity, rotated_initial_velocity.x, rotated_initial_velocity.y, random_mass);
 			registry.assign_or_replace<SDL_Color>(entity, SDL_Color{ random_r, random_g, random_b, 255 });
 			//registry.assign_or_replace<components::camera_focus>(entity);
 		}
