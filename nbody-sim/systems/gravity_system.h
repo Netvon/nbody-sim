@@ -2,6 +2,7 @@
 #include <sgw/sgw.h>
 #include <sgw/game.h>
 #include <glm/gtx/norm.hpp>
+#include <execution>
 #include "../components/physics2d.h"
 
 namespace sim_game::systems {
@@ -68,22 +69,37 @@ namespace sim_game::systems {
 
 			auto bodies = registry.view<tranform2d, physics2d>();
 
-			bodies.each([&](entt::entity body_a, const tranform2d& main_t, physics2d& main_p) {
+			std::for_each(std::execution::par_unseq, bodies.begin(), bodies.end(), [&](entt::entity body_a) {
 
-				bodies.each([&](entt::entity body_b, const tranform2d& other_t, physics2d& other_p) {
-					if (body_b != body_a) {
-						auto acceleration = calculate_acceleration(other_t, main_t, main_p, other_p);
-						main_p.add_velocity(acceleration * dt, false);
+				const auto& main_t = bodies.get<tranform2d>(body_a);
+				auto& main_p = bodies.get<physics2d>(body_a);
+
+				std::mutex m;
+
+				std::for_each(std::execution::par, bodies.begin(), bodies.end(), [&](entt::entity body_b) {
+					if (body_b == body_a) {
+						return;
 					}
-				});
 
+					const auto& other_t = bodies.get<tranform2d>(body_b);
+					const auto& other_p = bodies.get<physics2d>(body_b);
+
+					auto acceleration = calculate_acceleration(other_t, main_t, main_p, other_p);
+
+					std::lock_guard<std::mutex> guard(m);
+					main_p.add_velocity(acceleration * dt, false);
+				});
 			});
 		}
 
 		void update_positions(entt::registry& registry, float dt) {
 			auto bodies = registry.view<tranform2d, physics2d>();
 
-			bodies.each([&](tranform2d& t, const physics2d& p) {
+			std::for_each(std::execution::par_unseq, bodies.begin(), bodies.end(), [&bodies, dt](auto entity) {
+
+				auto& t = bodies.get<tranform2d>(entity);
+				const auto& p = bodies.get<physics2d>(entity);
+
 				t.add_position(p.get_velocity() * dt);
 			});
 		}
