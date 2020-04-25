@@ -6,7 +6,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[]) {
 	constexpr sgw::game_parameters params {
 		.sdl_lib_flags = sdl::lib::init_everything,
 		.sdl_image_flags = IMG_INIT_PNG,
-		.initial_window_title = "Sim Game",
+		.initial_window_title = "nbody sim",
 		.window_x = sdl::window::position_centered,
 		.window_y = sdl::window::position_centered,
 		.window_w = 1280,
