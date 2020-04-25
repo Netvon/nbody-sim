@@ -66,7 +66,6 @@ namespace sim_game::systems {
 			renderer.clear();
 			renderer.set_default_render_target();
 
-
 			auto circle_image = sgw::image_manager::load_image("assets/textures/circle_smooth_large.png");
 			m_texture_circle = renderer.create_texture_from_surface(circle_image);
 			m_texture_circle.set_blend_mode(SDL_BLENDMODE_BLEND);
@@ -77,9 +76,6 @@ namespace sim_game::systems {
 			m_texture_black.set_color_mod(SDL_Color{ 0, 0, 0, 255 });
 			m_texture_black.set_alpha_mod(10);
 		}
-
-		
-
 
 	private:
 		sdl::texture m_texture_trail;

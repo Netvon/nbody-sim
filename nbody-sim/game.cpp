@@ -2,15 +2,12 @@
 
 namespace sim_game {
 
-	void game::game_logic()
-	{
-
-		systems::gravity_system::update(*this);
+	void game::game_logic() {
+		m_gravity_system.update(*this);
 		m_spawn_system.update(*this);
-		
 	}
 
-	void game::game_draw(const sdl::renderer& renderer)
+	void game::game_draw([[maybe_unused]] const sdl::renderer& renderer)
 	{
 		m_points_render_system.update(*this);
 		m_ui_info_system.update(*this);

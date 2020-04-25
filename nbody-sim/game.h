@@ -22,6 +22,7 @@ namespace sim_game {
 		systems::point_render_system m_points_render_system;
 		systems::spawn_system m_spawn_system;
 		systems::ui_info_system m_ui_info_system;
+		systems::gravity_system m_gravity_system;
 		glm::vec2 m_midpoint;
 	};
 }

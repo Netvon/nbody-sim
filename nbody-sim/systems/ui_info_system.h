@@ -12,6 +12,7 @@ namespace sim_game::systems {
 	struct ui_info_system {
 		using tranform2d = sgw::components::transform2d;
 		using physics2d = components::physics2d;
+		using camera_focus = components::camera_focus;
 
 		void update(sgw::game& game) {
 			const auto& renderer = game.get_renderer();
@@ -147,11 +148,11 @@ namespace sim_game::systems {
 			const auto& font = fm.get_font(m_font_key);
 
 			m_help_texture = renderer.create_texture_from_surface(
-				font.render_solid("Press [H] to toggle UI", SDL_Color{ 255, 255, 255, 255 }));
+				font.render_solid("Press [H] to toggle UI. Click and drag to pan view.", SDL_Color{ 255, 255, 255, 255 }));
 			m_help_texture.set_alpha_mod(128);
 
 			game.get_entity_registry().on_construct<physics2d>().connect<&ui_info_system::on_object_added>(*this);
-			game.get_entity_registry().on_construct<components::camera_focus>().connect<&ui_info_system::on_focus_added>(*this);
+			game.get_entity_registry().on_construct<camera_focus>().connect<&ui_info_system::on_focus_added>(*this);
 		}
 
 		
