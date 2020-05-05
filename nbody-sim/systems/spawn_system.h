@@ -10,6 +10,8 @@ namespace sim_game::systems {
 	struct spawn_system {
 		static constexpr float default_velocity = -20.F;
 		static constexpr float default_heavy_mass = 1.E15F;
+		static constexpr float default_max_body_mass = default_heavy_mass * 0.0001F;
+		static constexpr float default_min_body_mass = 1.F;
 		static constexpr std::size_t default_spawn_amount = 24;
 
 		using tranform2d = sgw::components::transform2d;
@@ -65,6 +67,15 @@ namespace sim_game::systems {
 			}
 		}
 
+		[[nodiscard]] float get_min_body_mass() const noexcept { return m_min_body_mass; }
+		[[nodiscard]] float get_max_body_mass() const noexcept { return m_max_body_mass; }
+
+		void set_min_body_mass(float min_mass) noexcept { m_min_body_mass =  min_mass; }
+		void set_max_body_mass(float max_mass) noexcept { m_max_body_mass = max_mass; }
+
+		[[nodiscard]] std::size_t get_spawn_amount() const noexcept { return m_spawn_amount; }
+		void set_spawn_amount(std::size_t spawn_amount) noexcept { m_spawn_amount = spawn_amount; }
+
 	private:
 
 		void spawn_camera(entt::registry& registry) {
@@ -93,7 +104,7 @@ namespace sim_game::systems {
 			auto random_g = static_cast<unsigned char>(sgw::random::next(100, 255));
 			auto random_b = static_cast<unsigned char>(sgw::random::next(100, 255));
 
-			auto random_mass = sgw::random::next(1.F, default_heavy_mass * 0.001F);
+			auto random_mass = sgw::random::next(m_min_body_mass, m_max_body_mass);
 
 			auto random_rotation = sgw::random::next(0.F, 360.F);
 
@@ -150,5 +161,8 @@ namespace sim_game::systems {
 		std::size_t m_spawn_amount = default_spawn_amount;
 		entt::entity m_heavy;
 		entt::entity m_camera;
+
+		float m_max_body_mass = default_max_body_mass;
+		float m_min_body_mass = default_min_body_mass;
 	};
 }

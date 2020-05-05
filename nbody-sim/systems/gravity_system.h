@@ -87,7 +87,7 @@ namespace sim_game::systems {
 					auto acceleration = calculate_acceleration(other_t, main_t, main_p, other_p);
 
 					std::lock_guard<std::mutex> guard(m);
-					main_p.add_velocity(acceleration * dt, false);
+					main_p.add_velocity(acceleration * dt);
 				});
 			});
 		}

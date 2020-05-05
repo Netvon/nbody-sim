@@ -14,11 +14,14 @@ namespace sim_game::systems {
 	struct point_render_system {
 		using tranform2d = sgw::components::transform2d;
 
+		constexpr static tranform2d::vector_type defaul_planet_texture_scale{ 0.05F, 0.05F };
+		constexpr static float defaul_dpi{ 96.F };
+
 		void update(sgw::game& game) {
 			auto& registry = game.get_entity_registry();
 			const auto& renderer = game.get_renderer();
 
-			auto midpoint = (renderer.get_output_size_f<glm::vec2>() * 0.5F) / m_scale;
+			auto midpoint = (renderer.get_output_size_f<glm::vec2>() * 0.5F) / m_dpi_scale;
 			auto focus_id = registry.view<components::camera_focus>().front();
 			auto camera_id = registry.view<components::camera>().front();
 			const auto& focus_transform = registry.get<tranform2d>(focus_id);
@@ -30,21 +33,19 @@ namespace sim_game::systems {
 
 			renderer.copy_f(m_texture_trail, SDL_FPoint{ offset.x, offset.y });
 
-
 			registry.view<tranform2d, SDL_Color>().each([&](const tranform2d& t, const SDL_Color& c) {
 				const auto& pos = t.get_position();
 				auto guard = m_texture_circle.get_color_mod_guard();
 				m_texture_circle.set_color_mod(c);
 
-				renderer.copy_ex_f(m_texture_circle, pos + offset, 0.F, glm::vec2(0.05F, 0.05F) * m_scale);
+				renderer.copy_ex_f(m_texture_circle, pos + offset, 0.F, defaul_planet_texture_scale * m_dpi_scale);
 
 				renderer.set_render_target(m_texture_trail);
-				renderer.copy_ex_f(m_texture_circle, pos, 0.F, glm::vec2(0.05F, 0.05F) * m_scale);
+				renderer.copy_ex_f(m_texture_circle, pos, 0.F, defaul_planet_texture_scale * m_dpi_scale);
 				renderer.set_default_render_target();
 			});
 
 			renderer.set_render_target(m_texture_trail);
-
 			renderer.copy(m_texture_black);
 			renderer.set_default_render_target();
 
@@ -54,7 +55,7 @@ namespace sim_game::systems {
 			const auto& renderer = game.get_renderer();
 
 			auto dpi_info = sdl::lib::get_display_dpi(0);
-			m_scale = std::get<2>(dpi_info) / 96.F;
+			m_dpi_scale = std::get<2>(dpi_info) / defaul_dpi;
 
 			auto [w, h] = renderer.get_output_size();
 			m_texture_trail = renderer.create_texture(SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, w, h);
@@ -82,9 +83,6 @@ namespace sim_game::systems {
 		sdl::texture m_texture_circle;
 		sdl::texture m_texture_black;
 
-		float m_scale = 1.F;
-
+		float m_dpi_scale = 1.F;
 	};
-
-
 }
